@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{AD8563ED-DB03-AF3A-F09E-1D2158685B50}</ProjectGuid>
+    <ProjectGuid>{DDC20D8A-9E2F-501F-210A-8F683B376FC5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -63,9 +63,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\XRDraggableUI.cs" />
     <Compile Include="Assets\Scripts\XRInput\Core\XRButtonState.cs" />
     <Compile Include="Assets\Scripts\XRInput\Core\XRDebugLogger.cs" />
     <Compile Include="Assets\Scripts\XRInput\Core\XRInputSingleton.cs" />
+    <Compile Include="Assets\Scripts\XRInput\Core\XRRayHitPosition.cs" />
     <Compile Include="Assets\Scripts\XRRayHover.cs" />
     <Compile Include="Assets\Scripts\XRRayInteractorSubSystem.cs" />
     <Compile Include="Assets\Scripts\XRRaySelect.cs" />
@@ -626,100 +628,100 @@
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.6f1/Editor/Data/MonoBleedingEdge/lib/mono/unityscript/Boo.Lang.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.Management">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.XR.Management.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.Management.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Subsystem.Registration">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.Subsystem.Registration.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.Subsystem.Registration.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.Interaction.Toolkit">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.XR.Interaction.Toolkit.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.Interaction.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Shaders">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.ARSubsystems">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.XR.ARSubsystems.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.ARSubsystems.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.ARSubsystems.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.XR.ARSubsystems.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.ARSubsystems.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.Interaction.Toolkit.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.XR.Interaction.Toolkit.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.Interaction.Toolkit.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Runtime">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.InteractionSubsystems">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.XR.InteractionSubsystems.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.InteractionSubsystems.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Runtime">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.XR.LegacyInputHelpers">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.Management.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.XR.Management.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.Management.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.SpatialTracking">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/UnityEditor.SpatialTracking.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/UnityEditor.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpatialTracking">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/UnityEngine.SpatialTracking.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ShaderGraph.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.WindowsMixedReality.Editor">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.XR.WindowsMixedReality.Editor.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.WindowsMixedReality.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.WindowsMixedReality">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/Unity.XR.WindowsMixedReality.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.WindowsMixedReality.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.XR.LegacyInputHelpers">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/UnityEditor.XR.LegacyInputHelpers.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/UnityEditor.XR.LegacyInputHelpers.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
-      <HintPath>D:/LocalDevelop/XRInputDevelop/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+      <HintPath>D:/Crengine/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup></ItemGroup>

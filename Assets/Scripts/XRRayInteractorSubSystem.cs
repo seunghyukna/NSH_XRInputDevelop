@@ -17,7 +17,6 @@ public class XRRayInteractorSubSystem : MonoBehaviour
     [SerializeField] protected XRNode xrNode;
     [SerializeField] protected List<InputDevice> devices = new List<InputDevice>();
     [SerializeField] protected InputDevice device;
-    [SerializeField] protected float lineLength;
 
     protected Vector3 interactPoint;
     protected float interactLength;

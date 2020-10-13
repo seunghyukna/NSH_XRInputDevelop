@@ -5,22 +5,32 @@ using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 using XRLogger = XRInput.Core.XRDebugLogger;
+using XRRayHit = XRInput.Core.XRRayHitPosition;
 
 public class XRRaySelect : XRRayInteractorSubSystem
 {
-    [Header("XR Ray Hover Input")]
-    [SerializeField] private bool dragUse;
-    [SerializeField] private InputHelpers.Button dragUsage;
-    [SerializeField] private bool rotateUse;
-    [SerializeField] private InputHelpers.Button rotateUsage;
+    [Header("XR Select Input")]
+    [SerializeField] private float rayMaxLength;
 
-    [SerializeField] private float rayLength;
+    [Header("XR Interact Drag")]
+    //[SerializeField] private InputHelpers.Button dragUsage;
+    [SerializeField] private bool dragUse;
+    [SerializeField] private float dragSpeed = 5f;
+
+    [Header("XR Interact Raoate")]
+    //[SerializeField] private InputHelpers.Button rotateUsage;
+    [SerializeField] private bool rotateUse;
+    [SerializeField] private float rotateSpeed = 10f;
+
 
     private Vector3 interactOffset;
+    private Vector2 dragInput;
+    
 
     private bool isSelecting;
 
     private bool isTriggerPress;
+    private bool isDragPress;
 
     private void Start()
     {
@@ -37,6 +47,9 @@ public class XRRaySelect : XRRayInteractorSubSystem
 
     private void Update()
     {
+        Ray ray = new Ray(transform.position, transform.forward * rayMaxLength);
+        Debug.DrawRay(transform.position, transform.forward * rayMaxLength, Color.blue);
+
         if (!device.isValid)
         {
             GetDevice();
@@ -44,33 +57,41 @@ public class XRRaySelect : XRRayInteractorSubSystem
 
         if (isSelecting)
         {
-            InteractSelect();
+            HoldInteractable(ray);
         }
     }
 
-    private void InteractSelect()
+    private void HoldInteractable(Ray _ray)
     {
-        Ray ray = new Ray(transform.position, transform.forward * rayLength);
-        Debug.DrawRay(transform.position, transform.forward * rayLength, Color.blue);
-
         if (device.TryGetFeatureValue(CommonUsages.triggerButton, out isTriggerPress))
         {
-            baseInteractable.transform.position = ray.GetPoint(interactLength) + interactOffset;
+            baseInteractable.transform.position = _ray.GetPoint(interactLength) + interactOffset;
         }
 
         if (dragUse)
         {
-            DragInteractable(ray);
+            DragInteractable(_ray);
         }
         if (rotateUse)
         {
-            RotateInteractable(ray);
+            RotateInteractable(_ray);
         }
     }
 
     private void DragInteractable(Ray _ray)
     {
-
+        if (device.TryGetFeatureValue(CommonUsages.secondary2DAxis, out dragInput))
+        {
+            
+            if (dragInput.y > 0.3f && interactLength < rayMaxLength)
+            {
+                interactLength += (Time.deltaTime * dragSpeed);
+            }
+            else if (dragInput.y < -0.3f && interactLength > 0f)
+            {
+                interactLength -= (Time.deltaTime * dragSpeed);
+            }
+        }
     }
 
     private void RotateInteractable(Ray _ray)
@@ -80,8 +101,8 @@ public class XRRaySelect : XRRayInteractorSubSystem
 
     private void MatchLineLength()
     {
-        rayInteractor.maxRaycastDistance = rayLength;
-        lineVisual.lineLength = rayLength;
+        rayInteractor.maxRaycastDistance = rayMaxLength;
+        lineVisual.lineLength = rayMaxLength;
     }
 
     private void OnSelectEnterSubSystem(XRBaseInteractable _interactable)
@@ -90,12 +111,10 @@ public class XRRaySelect : XRRayInteractorSubSystem
 
         baseInteractable = baseInteractor.selectTarget;
         GetInteractPosition();
-
+        XRRayHit.Instance.HitPosition = interactPoint;
         interactLength = Vector3.Distance(transform.position, interactPoint);
-        Ray ray = new Ray(transform.position, transform.forward * rayLength);
-        //interactOffset = ray.GetPoint(interactLength) - baseInteractable.transform.position;
+        Ray ray = new Ray(transform.position, transform.forward * rayMaxLength);
         interactOffset = baseInteractable.transform.position - ray.GetPoint(interactLength);
-
 
         isSelecting = true;
     }
