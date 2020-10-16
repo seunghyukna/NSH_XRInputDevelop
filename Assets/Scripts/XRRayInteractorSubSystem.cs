@@ -35,8 +35,6 @@ public class XRRayInteractorSubSystem : MonoBehaviour
     // Device interact information
     private GameObject interactObject;
     private Vector3 interactPoint;
-    private Vector3 interactOffset;
-    private float interactLength;
 
     // Device button states
     private bool isTriggerPress;
@@ -52,10 +50,12 @@ public class XRRayInteractorSubSystem : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         lineVisual = GetComponent<XRInteractorLineVisual>();
 
-        baseInteractor.onHoverEnter.AddListener(OnHoverEnterSubSystem);
-        baseInteractor.onHoverExit.AddListener(OnHoverExitSubSystem);
-        baseInteractor.onSelectEnter.AddListener(OnSelectEnterSubSystem);
-        baseInteractor.onSelectExit.AddListener(OnSelectExitSubSystem);
+        baseInteractor.onHoverEnter.AddListener(OnHoverEnterInteractable);
+        baseInteractor.onHoverExit.AddListener(OnHoverExitInteractable);
+        baseInteractor.onSelectEnter.AddListener(OnSelectEnterInteractable);
+        baseInteractor.onSelectExit.AddListener(OnSelectExitInteractable);
+
+        XRInputManager.Instance.SetDeviceController(xrNode, gameObject);
 
         MatchLineLength();
     }
@@ -67,14 +67,20 @@ public class XRRayInteractorSubSystem : MonoBehaviour
             GetDevice();
         }
 
-        Debug.DrawRay(transform.position, transform.forward * rayMaxLength, Color.blue);
         GetInteractPosition();
         XRInputManager.Instance.SetDeviceHitPosition(xrNode, interactPoint);
+         
         Ray ray = new Ray(transform.position, transform.forward * rayMaxLength);
+        Debug.DrawRay(transform.position, transform.forward * rayMaxLength, Color.blue);
+        if (XRInputManager.Instance.GetDeviceInteractObject(xrNode) != null)
+        {
+            ray = new Ray(transform.position, transform.forward * XRInputManager.Instance.GetDeviceInteractLength(xrNode));
+            Debug.DrawRay(transform.position, transform.forward * XRInputManager.Instance.GetDeviceInteractLength(xrNode), Color.green);
+        }
 
-        DetectButtonUse();
+        DetectControllerUse();
 
-        if (interactObject != null)
+        if (XRInputManager.Instance.GetDeviceInteractObject(xrNode) != null)
         {
             HoldInteractable(ray);
         }
@@ -102,7 +108,8 @@ public class XRRayInteractorSubSystem : MonoBehaviour
 
     private void HoldInteractable(Ray _ray)
     {
-        interactObject.transform.position = _ray.GetPoint(interactLength) + interactOffset;
+        XRInputManager.Instance.GetDeviceInteractObject(xrNode).transform.position = 
+            _ray.GetPoint(XRInputManager.Instance.GetDeviceInteractLength(xrNode)) + XRInputManager.Instance.GetDeviceInteractOffset(xrNode);
         
         if (dragUse)
         {
@@ -116,13 +123,13 @@ public class XRRayInteractorSubSystem : MonoBehaviour
 
     private void DragInteractable(Ray _ray)
     {
-        if (secondaryVector.y > 0.3f && interactLength < rayMaxLength)
+        if (secondaryVector.y > 0.3f && XRInputManager.Instance.GetDeviceInteractLength(xrNode) < rayMaxLength)
         {
-            interactLength += (Time.deltaTime * dragSpeed);
+            XRInputManager.Instance.SetDeviceInteractLength(xrNode, XRInputManager.Instance.GetDeviceInteractLength(xrNode) + (Time.deltaTime * dragSpeed));
         }
-        else if (secondaryVector.y < -0.3f && interactLength > 0f)
+        else if (secondaryVector.y < -0.3f && XRInputManager.Instance.GetDeviceInteractLength(xrNode) > 0f)
         {
-            interactLength -= (Time.deltaTime * dragSpeed);
+            XRInputManager.Instance.SetDeviceInteractLength(xrNode, XRInputManager.Instance.GetDeviceInteractLength(xrNode) - (Time.deltaTime * dragSpeed));
         }
     }
 
@@ -131,7 +138,7 @@ public class XRRayInteractorSubSystem : MonoBehaviour
 
     }
 
-    private void DetectButtonUse()
+    private void DetectControllerUse()
     {
         device.TryGetFeatureValue(CommonUsages.triggerButton, out isTriggerPress);
         XRInputManager.Instance.SetDeviceTriggerState(xrNode, isTriggerPress);
@@ -149,21 +156,21 @@ public class XRRayInteractorSubSystem : MonoBehaviour
         XRInputManager.Instance.SetDeviceMenuState(xrNode, isMenuPress);
     }
 
-    private void OnHoverEnterSubSystem(XRBaseInteractable _interactable)
+    private void OnHoverEnterInteractable(XRBaseInteractable _interactable)
     {
         XRLogger.Instance.LogInfo($"Hover Enter : " + _interactable.name);
 
         isHovering = true;
     }
 
-    private void OnHoverExitSubSystem(XRBaseInteractable _interactable)
+    private void OnHoverExitInteractable(XRBaseInteractable _interactable)
     {
         XRLogger.Instance.LogInfo($"Hover Exit : " + _interactable.name);
 
         isHovering = false;
     }
 
-    private void OnSelectEnterSubSystem(XRBaseInteractable _interactable)
+    private void OnSelectEnterInteractable(XRBaseInteractable _interactable)
     {
         if (XRInputManager.Instance.GetDeviceInteractObject(xrNode) != null)
             return;
@@ -171,23 +178,25 @@ public class XRRayInteractorSubSystem : MonoBehaviour
         XRLogger.Instance.LogInfo($"Select Enter : " + _interactable.name);
 
         interactObject = baseInteractor.selectTarget.gameObject;
-        interactLength = Vector3.Distance(transform.position, interactPoint);
 
         Ray ray = new Ray(transform.position, transform.forward * rayMaxLength);
-        interactOffset = interactObject.transform.position - ray.GetPoint(interactLength);
 
         XRInputManager.Instance.SetDeviceInteractingState(xrNode, true);
         XRInputManager.Instance.SetDeviceInteractObject(xrNode, interactObject);
+        XRInputManager.Instance.SetDeviceInteractLength(xrNode, Vector3.Distance(transform.position, interactPoint));
+        XRInputManager.Instance.SetDeviceInteractOffet(xrNode, interactObject.transform.position, 
+            ray.GetPoint(XRInputManager.Instance.GetDeviceInteractLength(xrNode)));
     }
 
-    private void OnSelectExitSubSystem(XRBaseInteractable _interactable)
+    private void OnSelectExitInteractable(XRBaseInteractable _interactable)
     {
         XRLogger.Instance.LogInfo($"Select Exit");
 
         interactObject = null;
-        interactLength = 0.0f;
         XRInputManager.Instance.SetDeviceInteractingState(xrNode, false);
         XRInputManager.Instance.SetDeviceInteractObject(xrNode, null);
+        XRInputManager.Instance.SetDeviceInteractOffet(xrNode, Vector3.zero, Vector3.zero);
+        XRInputManager.Instance.SetDeviceInteractLength(xrNode, 0.0f);
     }
 
 }

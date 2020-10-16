@@ -6,7 +6,10 @@ namespace XRInput.Core
 {
     public class XRInputStateManager : XRInputSingleton<XRInputStateManager>
     {
+        private GameObject rightController;
         private Vector3 rightHitPosition;
+        private Vector3 rightInteractOffset;
+        private float rightInteractLength;
         private bool rightTriggerState;
         private bool rightGripState;
         private Vector2 rightPrimaryVector;
@@ -15,7 +18,10 @@ namespace XRInput.Core
         private bool rightInteracting;
         private GameObject rightInteractObject;
 
+        private GameObject leftController;
         private Vector3 leftHitPosition;
+        private Vector3 leftInteractOffset;
+        private float leftInteractLength;
         private bool leftTriggerState;
         private bool leftGripState;
         private Vector2 leftPrimaryVector;
@@ -23,6 +29,39 @@ namespace XRInput.Core
         private bool leftMenuState;
         private bool leftInteracting;
         private GameObject leftInteractObject;
+
+        public GameObject GetDeviceController(XRNode _xrNode)
+        {
+            if (_xrNode == XRNode.RightHand)
+            {
+                return rightController;
+            }
+            else if (_xrNode == XRNode.LeftHand)
+            {
+                return leftController;
+            }
+            else
+            {
+                Debug.LogError("Not Assigned Hand Controller");
+                return null;
+            }
+        }
+
+        public void SetDeviceController(XRNode _xrNode, GameObject _object)
+        {
+            if (_xrNode == XRNode.RightHand)
+            {
+                rightController = _object;
+            }
+            else if (_xrNode == XRNode.LeftHand)
+            {
+                leftController = _object;
+            }
+            else
+            {
+                Debug.LogError("Not Assigned Hand Controller");
+            }
+        }
 
         public Vector3 GetDeviceHitPosition(XRNode _xrNode)
         {
@@ -40,15 +79,79 @@ namespace XRInput.Core
                 return Vector3.zero;
             }
         }
-        public void SetDeviceHitPosition(XRNode _xrNode, Vector3 _position)
+        public void SetDeviceHitPosition(XRNode _xrNode, Vector3 _vector)
         {
             if (_xrNode == XRNode.RightHand)
             {
-                rightHitPosition = _position;
+                rightHitPosition = _vector;
             }
             else if (_xrNode == XRNode.LeftHand)
             {
-                leftHitPosition = _position;
+                leftHitPosition = _vector;
+            }
+            else
+            {
+                Debug.LogError("Not Assigned Hand Controller");
+            }
+        }
+
+        public Vector3 GetDeviceInteractOffset(XRNode _xrNode)
+        {
+            if (_xrNode == XRNode.RightHand)
+            {
+                return rightInteractOffset;
+            }
+            else if (_xrNode == XRNode.LeftHand)
+            {
+                return leftInteractOffset;
+            }
+            else
+            {
+                Debug.LogError("Not Assigned Hand Controller");
+                return Vector3.zero;
+            }
+        }
+        public void SetDeviceInteractOffet(XRNode _xrNode, Vector3 _targetPos, Vector3 _interactPos)
+        {
+            if (_xrNode == XRNode.RightHand)
+            {
+                rightInteractOffset = _targetPos - _interactPos;
+            }
+            else if (_xrNode == XRNode.LeftHand)
+            {
+                leftInteractOffset = _targetPos - _interactPos;
+            }
+            else
+            {
+                Debug.LogError("Not Assigned Hand Controller");
+            }
+        }
+
+        public float GetDeviceInteractLength(XRNode _xrNode)
+        {
+            if (_xrNode == XRNode.RightHand)
+            {
+                return rightInteractLength;
+            }
+            else if (_xrNode == XRNode.LeftHand)
+            {
+                return leftInteractLength;
+            }
+            else
+            {
+                Debug.LogError("Not Assigned Hand Controller");
+                return 0.0f;
+            }
+        }
+        public void SetDeviceInteractLength(XRNode _xrNode, float _length)
+        {
+            if (_xrNode == XRNode.RightHand)
+            {
+                rightInteractLength = _length;
+            }
+            else if (_xrNode == XRNode.LeftHand)
+            {
+                leftInteractLength = _length;
             }
             else
             {

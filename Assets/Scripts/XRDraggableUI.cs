@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR;
-using UnityEngine.XR.Interaction.Toolkit;
 using XRLogger = XRInput.Core.XRDebugLogger;
 using XRInputManager = XRInput.Core.XRInputStateManager;
 
@@ -15,61 +14,114 @@ public class XRDraggableUI : MonoBehaviour
     private PointerEventData rightPointerEventData;
     private PointerEventData leftPointerEventData;
 
-    public XRInteractorLineVisual rightLineVisual;
-
-    private Vector3 interactOffset;
-
     private void Start()
     {
         graphicRaycaster = GetComponent<GraphicRaycaster>();
         rightPointerEventData = new PointerEventData(EventSystem.current);
         leftPointerEventData = new PointerEventData(EventSystem.current);
-
-
     }
 
     private void Update()
     {
-        RaycastHit hit;
-        Physics.Raycast
-
-        //rightPointerEventData.position = Camera.main.WorldToScreenPoint(XRInputManager.Instance.GetDeviceHitPosition(XRNode.RightHand));
-        //graphicRaycaster.Raycast(rightPointerEventData, rightResults);
-
-        //leftPointerEventData.position = Camera.main.WorldToScreenPoint(XRInputManager.Instance.GetDeviceHitPosition(XRNode.LeftHand));
-        //graphicRaycaster.Raycast(leftPointerEventData, leftResults);
-
-        //if (rightResults.Count <= 0 || leftResults.Count <= 0)
-        //    return;
-
-        //DetectRay();
-        //rightResults.Clear();
-        //leftResults.Clear();
-
-        //var ped = new PointerEventData(EventSystem.current);
-        //ped.position = Camera.main.WorldToScreenPoint(XRInputManager.Instance.rightHitPosition);
-        //graphicRaycaster.Raycast(ped, results);
-
-        //if (results.Count <= 0)
-        //    return;
-
-        //DetectRay();
-        //results.Clear();
+        DetectRightRay();
+        DetectLeftRay();
     }
 
-    private void DetectRay()
+    private void DetectRightRay()
     {
+        rightPointerEventData.position = Camera.main.WorldToScreenPoint(XRInputManager.Instance.GetDeviceHitPosition(XRNode.RightHand));
+        graphicRaycaster.Raycast(rightPointerEventData, rightResults);
+        
+        if (rightResults.Count <= 0)
+        {
+            return;
+        }
+
         if (rightResults[0].gameObject.name == "GrabbablePanel")
         {
-            if (XRInputManager.Instance.GetDeviceInteractObject(XRNode.RightHand) != null)
+            // Compare interacting object / this
+            if (XRInputManager.Instance.GetDeviceInteractObject(XRNode.RightHand) != null &&
+                XRInputManager.Instance.GetDeviceInteractObject(XRNode.RightHand) != transform.gameObject)
                 return;
-
-            XRInputManager.Instance.SetDeviceInteractObject(XRNode.RightHand, transform.gameObject);
+            
+            // Dragging
             if (XRInputManager.Instance.GetDeviceTriggerState(XRNode.RightHand))
             {
+                XRInputManager.Instance.SetDeviceInteractObject(XRNode.RightHand, transform.gameObject);
                 XRInputManager.Instance.SetDeviceInteractingState(XRNode.RightHand, true);
-                transform.position = XRInputManager.Instance.GetDeviceHitPosition(XRNode.RightHand);
+                // Initialize interact length
+                if (XRInputManager.Instance.GetDeviceInteractLength(XRNode.RightHand) == 0.0f)
+                {
+                    XRInputManager.Instance.SetDeviceInteractLength(XRNode.RightHand, 
+                        Vector3.Distance(XRInputManager.Instance.GetDeviceController(XRNode.RightHand).transform.position,
+                        XRInputManager.Instance.GetDeviceHitPosition(XRNode.RightHand)));
+                }
+                // Initialize interact offset
+                if (XRInputManager.Instance.GetDeviceInteractOffset(XRNode.RightHand) == Vector3.zero)
+                {
+                    XRInputManager.Instance.SetDeviceInteractOffet(XRNode.RightHand, transform.position,
+                        XRInputManager.Instance.GetDeviceHitPosition(XRNode.RightHand));
+                }
+            }
+            // Clear interact values
+            else if (!XRInputManager.Instance.GetDeviceTriggerState(XRNode.RightHand))
+            {
+                XRInputManager.Instance.SetDeviceInteractObject(XRNode.RightHand, null);
+                XRInputManager.Instance.SetDeviceInteractingState(XRNode.RightHand, false);
+                XRInputManager.Instance.SetDeviceInteractOffet(XRNode.RightHand, Vector3.zero, Vector3.zero);
+                XRInputManager.Instance.SetDeviceInteractLength(XRNode.RightHand, 0.0f);
             }
         }
+
+        rightResults.Clear();
+    }
+
+    private void DetectLeftRay()
+    {
+        leftPointerEventData.position = Camera.main.WorldToScreenPoint(XRInputManager.Instance.GetDeviceHitPosition(XRNode.LeftHand));
+        graphicRaycaster.Raycast(leftPointerEventData, leftResults);
+
+        if (leftResults.Count <= 0)
+        {
+            return;
+        }
+
+        if (leftResults[0].gameObject.name == "GrabbablePanel")
+        {
+            // Compare interacting object / this
+            if (XRInputManager.Instance.GetDeviceInteractObject(XRNode.LeftHand) != null &&
+                XRInputManager.Instance.GetDeviceInteractObject(XRNode.LeftHand) != transform.gameObject)
+                return;
+            
+            if (XRInputManager.Instance.GetDeviceTriggerState(XRNode.LeftHand))
+            {
+                // Dragging
+                XRInputManager.Instance.SetDeviceInteractObject(XRNode.LeftHand, transform.gameObject);
+                XRInputManager.Instance.SetDeviceInteractingState(XRNode.LeftHand, true);
+                // Initialize interact length
+                if (XRInputManager.Instance.GetDeviceInteractLength(XRNode.LeftHand) == 0.0f)
+                {
+                    XRInputManager.Instance.SetDeviceInteractLength(XRNode.LeftHand,
+                        Vector3.Distance(XRInputManager.Instance.GetDeviceController(XRNode.LeftHand).transform.position,
+                        XRInputManager.Instance.GetDeviceHitPosition(XRNode.LeftHand)));
+                }
+                // Initialize interact offset
+                if (XRInputManager.Instance.GetDeviceInteractOffset(XRNode.LeftHand) == Vector3.zero)
+                {
+                    XRInputManager.Instance.SetDeviceInteractOffet(XRNode.LeftHand, transform.position,
+                        XRInputManager.Instance.GetDeviceHitPosition(XRNode.LeftHand));
+                }
+            }
+            // Clear interact values
+            else if (!XRInputManager.Instance.GetDeviceTriggerState(XRNode.LeftHand))
+            {
+                XRInputManager.Instance.SetDeviceInteractObject(XRNode.LeftHand, null);
+                XRInputManager.Instance.SetDeviceInteractingState(XRNode.LeftHand, false);
+                XRInputManager.Instance.SetDeviceInteractOffet(XRNode.LeftHand, Vector3.zero, Vector3.zero);
+                XRInputManager.Instance.SetDeviceInteractLength(XRNode.LeftHand, 0.0f);
+            }
+        }
+        
+        leftResults.Clear();
     }
 }
