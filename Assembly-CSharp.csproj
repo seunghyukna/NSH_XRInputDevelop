@@ -63,14 +63,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Crengine\Core\EventCore.cs" />
+    <Compile Include="Assets\Scripts\Crengine\Core\Manager.cs" />
+    <Compile Include="Assets\Scripts\Crengine\Core\SingletonRegistry.cs" />
     <Compile Include="Assets\Scripts\XRDraggableUI.cs" />
     <Compile Include="Assets\Scripts\XRInput\Core\XRButtonState.cs" />
     <Compile Include="Assets\Scripts\XRInput\Core\XRDebugLogger.cs" />
     <Compile Include="Assets\Scripts\XRInput\Core\XRInputSingleton.cs" />
-    <Compile Include="Assets\Scripts\XRInput\Core\XRRayHitPosition.cs" />
-    <Compile Include="Assets\Scripts\XRRayHover.cs" />
+    <Compile Include="Assets\Scripts\XRInput\Core\XRInputStateManager.cs" />
     <Compile Include="Assets\Scripts\XRRayInteractorSubSystem.cs" />
-    <Compile Include="Assets\Scripts\XRRaySelect.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
