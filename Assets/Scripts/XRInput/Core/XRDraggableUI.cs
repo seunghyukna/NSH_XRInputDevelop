@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR;
-using XRLogger = XRInput.Core.XRDebugLogger;
 using XRInputManager = XRInput.Core.XRInputStateManager;
 
 namespace XRInput.Core

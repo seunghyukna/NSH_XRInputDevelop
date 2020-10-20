@@ -7,10 +7,12 @@ namespace XRInput.Core
 {
     public class XRFloatingUI : MonoBehaviour
     {
+        [SerializeField] private XRNode xrNode;
         [SerializeField] private Transform canvas;
         [SerializeField] private Transform offset;
-        [SerializeField] private Transform cam;
+        [SerializeField] private Camera cam;
         [SerializeField] private bool isActive;
+        private bool buttonTrigger;
 
         public CanvasGroup mainPage;
         public CanvasGroup page1;
@@ -19,53 +21,47 @@ namespace XRInput.Core
 
         private void Update()
         {
-            CatchMenuClicked();
-
             if (isActive)
             {
                 FollowingOffset();
             }
+
+            FloatingUIActivate();
         }
 
-        private void CatchMenuClicked()
+
+        private void FloatingUIActivate()
         {
-            if (XRInputManager.Instance.GetDeviceMenuState(XRNode.LeftHand))
+            if (XRInputManager.Instance.GetDeviceMenuState(xrNode) && !buttonTrigger)
             {
                 if (!isActive)
                 {
-                    ActiveFloatingUI();
+                    ActiveCanvasGroup(mainPage);
+
+                    isActive = true;
                 }
                 else
                 {
-                    InactiveFloatingUI();
+                    InactiveCanvasGroup(mainPage);
+
+                    isActive = false;
                 }
+            }
+
+            if (XRInputManager.Instance.GetDeviceMenuState(xrNode))
+            {
+                buttonTrigger = true;
+            }
+            else if (!XRInputManager.Instance.GetDeviceMenuState(xrNode))
+            {
+                buttonTrigger = false;
             }
         }
 
         private void FollowingOffset()
         {
-            transform.position = offset.position;
-            // canvas must face cam
-            // add....
-            
-        }
-
-        private void ActiveFloatingUI()
-        {
-            mainPage.alpha = 1;
-            mainPage.interactable = true;
-            mainPage.blocksRaycasts = true;
-
-            isActive = true;
-        }
-
-        private void InactiveFloatingUI()
-        {
-            mainPage.alpha = 0;
-            mainPage.interactable = false;
-            mainPage.blocksRaycasts = false;
-
-            isActive = false;
+            canvas.position = offset.position;
+            canvas.rotation = Quaternion.LookRotation(canvas.position - cam.transform.position, Vector3.up);
         }
 
         public void ActiveCanvasGroup(CanvasGroup _canvasGroup)
@@ -77,7 +73,7 @@ namespace XRInput.Core
 
         public void InactiveCanvasGroup(CanvasGroup _canvasGroup)
         {
-            _canvasGroup.alpha = 1;
+            _canvasGroup.alpha = 0;
             _canvasGroup.interactable = false;
             _canvasGroup.blocksRaycasts = false;
         }
