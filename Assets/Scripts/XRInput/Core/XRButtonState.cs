@@ -1,4 +1,4 @@
-﻿namespace XRInput.Core
+﻿namespace Crengine.XRInput.Core
 {
     public enum XRButtonState
     {

@@ -3,9 +3,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
-using XRInput.Core.Singleton;
+using Crengine.XRInput.Core.Singleton;
 
-namespace XRInput.Core
+namespace Crengine.XRInput.Core
 {
     public class XRInputStateManager : XRInputSingleton<XRInputStateManager>
     {

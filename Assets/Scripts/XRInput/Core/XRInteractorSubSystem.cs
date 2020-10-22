@@ -3,9 +3,9 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
-using XRInputManager = XRInput.Core.XRInputStateManager;
+using XRInputManager = Crengine.XRInput.Core.XRInputStateManager;
 
-namespace XRInput.Core
+namespace Crengine.XRInput.Core
 {
     public class XRInteractorSubSystem : MonoBehaviour
     {

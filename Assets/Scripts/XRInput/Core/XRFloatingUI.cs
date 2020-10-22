@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.XR;
-using XRLogger = XRInput.Core.XRDebugLogger;
-using XRInputManager = XRInput.Core.XRInputStateManager;
+using XRLogger = Crengine.XRInput.Core.XRDebugLogger;
+using XRInputManager = Crengine.XRInput.Core.XRInputStateManager;
 
-namespace XRInput.Core
+namespace Crengine.XRInput.Core
 {
     public class XRFloatingUI : MonoBehaviour
     {

@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR;
-using XRInputManager = XRInput.Core.XRInputStateManager;
+using XRInputManager = Crengine.XRInput.Core.XRInputStateManager;
 
-namespace XRInput.Core
+namespace Crengine.XRInput.Core
 {
     public class XRDraggableUI : MonoBehaviour
     {
