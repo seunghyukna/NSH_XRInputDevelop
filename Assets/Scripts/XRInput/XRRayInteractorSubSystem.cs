@@ -10,29 +10,25 @@ namespace Crengine.XRInput
 {
     public class XRRayInteractorSubSystem : XRInteractorSubSystem
     {
+        [SerializeField] Transform player;
         private XRRayInteractor rayInteractor;
-        private LineRenderer lineRenderer;
-        private XRInteractorLineVisual lineVisual;
+        private LineVisual lineVisual;
+        [SerializeField] private float rayMaxLength;
         private Vector3 currentInteractPoint;
-        private Vector3 interactedPoint;
+        private RaycastHit currentHit;
         private Vector3 interactorPoint;
         private float interactLength;
-        private RaycastHit currentHit;
-        [SerializeField] private float rayMaxLength;
-        [SerializeField] private float dragCoefficient;
-
-        [SerializeField] private LineVisual myLineVisual;
+        
 
         [Header("Hover")]
         [SerializeField] private bool hoverUse;
         private List<GameObject> hoveringObjects = new List<GameObject>();
         private bool isHovering;
-        //private XRLinerendererExtend lineExtend;
 
-        [Header("Grab")]
-        [SerializeField] private bool grabUse;
-        private GameObject grabbingObject;
-        private bool isGrabbing;
+        [Header("Select")]
+        [SerializeField] private bool selectUse;
+        private GameObject selectedObject;
+        private bool isSelected;
 
         [Header("Outline")]
         [SerializeField] private bool outlineUse;
@@ -41,22 +37,29 @@ namespace Crengine.XRInput
         private List<Outline> outlines = new List<Outline>();
 
         [Header("Grab Drag")]
-        //[SerializeField] private InputHelpers.Button dragUsage;
         [SerializeField] private bool dragUse;
         [SerializeField] private float dragSpeed = 0.1f;
+        [SerializeField] private float pullingAmount = 50f;
 
-        [Header("Grab Raoate")]
-        //[SerializeField] private InputHelpers.Button rotateUsage;
-        [SerializeField] private bool rotateUse;
-        [SerializeField] private float rotateSpeed = 10f;
+        //[Header("Grab Raoate")]
+        //[SerializeField] private bool rotateUse;
+        //[SerializeField] private float rotateSpeed = 10f;
 
+        XRControlTypeManager controlTypeManager;
+        private void Awake()
+        {
+            controlTypeManager = player.GetComponent<XRControlTypeManager>();
+            if (controlTypeManager.Interactor != InteractorType.Ray)
+            {
+                gameObject.SetActive(false);
+            }
+        }
 
         private void Start()
         {
             baseInteractor = GetComponent<XRBaseInteractor>();
             rayInteractor = GetComponent<XRRayInteractor>();
-            lineRenderer = GetComponent<LineRenderer>();
-            lineVisual = GetComponent<XRInteractorLineVisual>();
+            lineVisual = GetComponent<LineVisual>();
 
             baseInteractor.onHoverEnter.AddListener(OnHoverEnterInteractable);
             baseInteractor.onHoverExit.AddListener(OnHoverExitInteractable);
@@ -68,31 +71,33 @@ namespace Crengine.XRInput
 
         private void Update()
         {
+            // Get my XRNode
             if (!device.isValid)
-            {
                 GetDevice();
-            }
 
+            // Catch current XRNode button use
             DetectControllerUse();
-            Ray ray = new Ray(transform.position, transform.forward * rayMaxLength);
-            Debug.DrawRay(transform.position, transform.forward * rayMaxLength, Color.green);
 
+            Ray ray = new Ray(transform.position, transform.forward * rayMaxLength);
+
+            // Control ray length when interact
             if (XRInputManager.Instance.GetDeviceInteractObject(xrNode) != null)
             {
                 ray = new Ray(transform.position, transform.forward * XRInputManager.Instance.GetDeviceInteractLength(xrNode));
-                Debug.DrawRay(transform.position, transform.forward * XRInputManager.Instance.GetDeviceInteractLength(xrNode), Color.blue);
             }
 
-            // Get last ray position sequentially
+            // Get ray end point sequentially
             GetInteractPosition(ray);
             XRInputManager.Instance.SetDeviceHitPosition(xrNode, currentInteractPoint);
 
+            // hold & drag interacted obejct
             if (XRInputManager.Instance.GetDeviceInteractObject(xrNode) != null)
             {
                 HoldInteractable(ray);   
             }
-            
-            myLineVisual.LineVisualize(isGrabbing);
+
+            // Update LineRenderer
+            lineVisual.LineVisualize(isSelected);
         }
 
         #region Initialization
@@ -102,13 +107,13 @@ namespace Crengine.XRInput
             RaycastHit hit;
             Physics.Raycast(_ray, out hit);
 
-            // no hit object
-            currentInteractPoint = transform.position + _ray.direction * rayMaxLength;
-
             // hit object
             if (hit.transform != null)
             {
                 currentInteractPoint = transform.position + _ray.direction * Vector3.Distance(transform.position, hit.transform.position);
+                lineVisual.FollowPoint = currentInteractPoint;
+
+                return;
             }
             
             // grab object
@@ -116,28 +121,34 @@ namespace Crengine.XRInput
             {                
                 currentInteractPoint = transform.position + _ray.direction * 
                     XRInputManager.Instance.GetDeviceInteractLength(xrNode);
+                lineVisual.FollowPoint = currentInteractPoint;
+
+                return;
             }
 
-            myLineVisual.FollowPoint = currentInteractPoint;
+            // no hit object
+            currentInteractPoint = transform.position + _ray.direction * rayMaxLength;
+            lineVisual.FollowPoint = currentInteractPoint;
         }
 
         private void MatchLineLength()
         {
             rayInteractor.maxRaycastDistance = rayMaxLength;
-            lineVisual.lineLength = rayMaxLength;
         }
 
         #endregion
 
         #region Hovering
 
-        private void OutlineActivate()
+        private void OutlineActivate(XRBaseInteractable _interactable)
         {
             if (!outlineUse)
                 return;
 
+            hoveringObjects.Add(_interactable.gameObject);
             int currentIdx = hoveringObjects.Count - 1;
              
+            // Attach Outline component
             if (hoveringObjects[currentIdx].GetComponent<Outline>() == null)
                 hoveringObjects[currentIdx].gameObject.AddComponent<Outline>();
 
@@ -156,9 +167,10 @@ namespace Crengine.XRInput
             int currentIdx = outlines.IndexOf(_interactable.gameObject.GetComponent<Outline>());
             outlines[currentIdx].enabled = false;
             outlines.RemoveAt(currentIdx);
+            hoveringObjects.Remove(_interactable.gameObject);
         }
 
-        private void ActiveOutlineCurrentHit()
+        private void ManageOutlineActivate()
         {
             if (currentHit.transform == null)
                 return;
@@ -178,20 +190,31 @@ namespace Crengine.XRInput
 
         private void HoldInteractable(Ray _ray)
         {
+            // Move interactable obejct 
             if (dragUse)
             {
+                float playerInteractorDistance = Vector3.Distance(player.position, interactorPoint);
+                float currentDistance = Vector3.Distance(player.position, transform.position);
+                float distanceOffset = currentDistance - playerInteractorDistance;
+                float newLength = interactLength + distanceOffset * pullingAmount;
+
+                XRInputManager.Instance.SetDeviceInteractLength(xrNode, Mathf.Clamp(newLength, 1, rayMaxLength));
+
+                // Manipulate interactable object
                 XRInputManager.Instance.GetDeviceInteractObject(xrNode).transform.position =
                     Vector3.Lerp(XRInputManager.Instance.GetDeviceInteractObject(xrNode).transform.position,
                     _ray.GetPoint(XRInputManager.Instance.GetDeviceInteractLength(xrNode)) + XRInputManager.Instance.GetDeviceInteractOffset(xrNode),
                     dragSpeed);
             }
 
-            if (rotateUse)
-            {
+            // Rotate interactable object
+            //if (rotateUse)
+            //{
 
-            }
+            //}
 
-            myLineVisual.localToGlobalPoint =
+            // Fix linerenderer end point to first interacted point
+            lineVisual.LocalToGlobalPoint =
                 XRInputManager.Instance.GetDeviceInteractObject(xrNode).transform.position - XRInputManager.Instance.GetDeviceInteractOffset(xrNode);
         }
 
@@ -201,96 +224,90 @@ namespace Crengine.XRInput
 
         private void OnHoverEnterInteractable(XRBaseInteractable _interactable)
         {
-            if (!hoverUse || isGrabbing)
+            if (!hoverUse || isSelected)
                 return;
 
             XRLogger.Instance.LogInfo($"Hover Enter : " + _interactable.name);
 
+            // Interactable object is UI
             if (_interactable.gameObject.layer == 5)
             {
                 XRUIManipulateProvider.InvokeUIHoverEnter(_interactable.gameObject, baseInteractor);
             }
             
             rayInteractor.GetCurrentRaycastHit(out currentHit);
-
-            hoveringObjects.Add(_interactable.gameObject);
-            OutlineActivate();
-
-            ActiveOutlineCurrentHit();
-
+            OutlineActivate(_interactable);
+            ManageOutlineActivate();
             isHovering = true;
-
-            //lineExtend.ChangeLine(isHovering);
         }
 
         private void OnHoverExitInteractable(XRBaseInteractable _interactable)
         {
-            if (!hoverUse || isGrabbing)
+            if (!hoverUse || isSelected)
                 return;
 
             XRLogger.Instance.LogInfo($"Hover Exit : " + _interactable.name);
 
+            // Interactable object is UI
             if (_interactable.gameObject.layer == 5)
             {
                 XRUIManipulateProvider.InvokeUIHoverExit(_interactable.gameObject, baseInteractor);
             }
 
             rayInteractor.GetCurrentRaycastHit(out currentHit);
-
-            ActiveOutlineCurrentHit();
+            ManageOutlineActivate();
             OutlineDeactivate(_interactable);
-
-            hoveringObjects.Remove(_interactable.gameObject);
-            
             isHovering = false;
-
-            //lineExtend.ChangeLine(isHovering);
         }
 
         private void OnSelectEnterInteractable(XRBaseInteractable _interactable)
         {
-            if (!grabUse || XRInputManager.Instance.GetDeviceInteractObject(xrNode) != null)
+            if (!selectUse || XRInputManager.Instance.GetDeviceInteractObject(xrNode) != null)
                 return;
 
             XRLogger.Instance.LogInfo($"Select Enter : " + _interactable.name);
 
+            // Interactable object is UI
             if (_interactable.gameObject.layer == 5)
             {
                 XRUIManipulateProvider.InvokeUIManipulateStart(_interactable.gameObject, baseInteractor);
             }
 
-            grabbingObject = baseInteractor.selectTarget.gameObject;
-            interactedPoint = currentInteractPoint;
-            interactorPoint = transform.position;
+            selectedObject = baseInteractor.selectTarget.gameObject;
             interactLength = Vector3.Distance(transform.position, currentInteractPoint);
-            isGrabbing = true;
+            interactorPoint = transform.position;
+            isSelected = true;
 
             Ray ray = new Ray(transform.position, transform.forward * rayMaxLength);
 
             XRInputManager.Instance.SetDeviceInteractingState(xrNode, true);
-            XRInputManager.Instance.SetDeviceInteractObject(xrNode, grabbingObject);
+            XRInputManager.Instance.SetDeviceInteractObject(xrNode, selectedObject);
             XRInputManager.Instance.SetDeviceInteractLength(xrNode, interactLength);
-            XRInputManager.Instance.SetDeviceInteractOffet(xrNode, grabbingObject.transform.position, ray.GetPoint(interactLength));
+            XRInputManager.Instance.SetDeviceInteractOffet(xrNode, selectedObject.transform.position, ray.GetPoint(interactLength));
         }
 
         private void OnSelectExitInteractable(XRBaseInteractable _interactable)
         {
-            if (!grabUse)
+            if (!selectUse)
                 return;
 
             XRLogger.Instance.LogInfo($"Select Exit : " + _interactable.name);
 
+            // Interactable object is UI
             if (_interactable.gameObject.layer == 5)
             {
                 XRUIManipulateProvider.InvokeUIManipulateEnd(_interactable.gameObject, baseInteractor);
             }
 
-            grabbingObject = null;
-            isGrabbing = false;
+            selectedObject = null;
+            interactLength = 0.0f;
+            interactorPoint = Vector3.zero;
+            isSelected = false;
+
             XRInputManager.Instance.SetDeviceInteractingState(xrNode, false);
             XRInputManager.Instance.SetDeviceInteractObject(xrNode, null);
-            XRInputManager.Instance.SetDeviceInteractOffet(xrNode, Vector3.zero, Vector3.zero);
             XRInputManager.Instance.SetDeviceInteractLength(xrNode, 0.0f);
+            XRInputManager.Instance.SetDeviceInteractOffet(xrNode, Vector3.zero, Vector3.zero);
         }
 
         #endregion

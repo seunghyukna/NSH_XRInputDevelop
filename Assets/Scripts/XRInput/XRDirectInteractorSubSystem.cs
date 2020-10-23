@@ -9,6 +9,7 @@ namespace Crengine.XRInput
 {
     public class XRDirectInteractorSubSystem : XRInteractorSubSystem
     {
+        [SerializeField] private Transform player;
         private XRDirectInteractor directInteractor;
         private Vector3 interactPoint;
 
@@ -28,6 +29,15 @@ namespace Crengine.XRInput
         [SerializeField] [Range(0, 10)] private float outlineWidth;
         private List<Outline> outlines = new List<Outline>();
 
+        XRControlTypeManager controlTypeManager;
+        private void Awake()
+        {
+            controlTypeManager = player.GetComponent<XRControlTypeManager>();
+            if (controlTypeManager.Interactor != InteractorType.Direct)
+            {
+                gameObject.SetActive(false);
+            }
+        }
         private void Start()
         {
             baseInteractor = GetComponent<XRBaseInteractor>();

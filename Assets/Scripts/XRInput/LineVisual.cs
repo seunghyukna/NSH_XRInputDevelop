@@ -1,21 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using XRInputManager = Crengine.XRInput.Core.XRInputStateManager;
+﻿using UnityEngine;
 
 namespace Crengine.XRInput
 {
     [RequireComponent(typeof(LineRenderer))]
     public class LineVisual : MonoBehaviour
     {
-        [SerializeField] private Vector3 followPoint;
+        [SerializeField] private Transform startPoint;
+        [SerializeField] private Transform midPoint;
+        [SerializeField] private Transform endPoint;
+
+        private Vector3 followPoint;
         public Vector3 FollowPoint { get { return followPoint; } set { followPoint = value; } }
 
-        public Vector3 localToGlobalPoint;
-
-        public Transform startPoint;
-        public Transform midPoint;
-        public Transform endPoint;
+        private Vector3 localToGlobalPoint;
+        public Vector3 LocalToGlobalPoint { get { return localToGlobalPoint; } set { localToGlobalPoint = value; } }
 
         public void LineVisualize(bool _isGrab)
         {
@@ -24,17 +22,13 @@ namespace Crengine.XRInput
             if (!_isGrab)
             {
                 // Standard state
-
                 midPoint.position = transform.position + (followPoint - transform.position) / 2;
-
                 endPoint.position = followPoint;
             }
             else
             {
                 // Grabbing state
-
                 midPoint.position = transform.position + (followPoint - transform.position) / 2;
-
                 endPoint.position = localToGlobalPoint;
             }
         }
