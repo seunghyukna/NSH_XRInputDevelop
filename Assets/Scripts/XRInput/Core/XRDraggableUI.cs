@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR;
-using XRLogger = XRInput.Core.XRDebugLogger;
-using XRInputManager = XRInput.Core.XRInputStateManager;
+using XRInputManager = Crengine.XRInput.Core.XRInputStateManager;
 
-namespace XRInput.Core
+namespace Crengine.XRInput.Core
 {
     public class XRDraggableUI : MonoBehaviour
     {
+        [Header("Manipulate Plate")]
+        public UnityEvent event1;
+
         private GraphicRaycaster graphicRaycaster;
         private List<RaycastResult> rightResults = new List<RaycastResult>();
         private List<RaycastResult> leftResults = new List<RaycastResult>();

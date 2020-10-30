@@ -2,9 +2,9 @@
 using UnityEngine;
 using System.Linq;
 using TMPro;
-using XRInput.Core.Singleton;
+using Crengine.XRInput.Core.Singleton;
 
-namespace XRInput.Core
+namespace Crengine.XRInput.Core
 {
     public class XRDebugLogger : XRInputSingleton<XRDebugLogger>
     {

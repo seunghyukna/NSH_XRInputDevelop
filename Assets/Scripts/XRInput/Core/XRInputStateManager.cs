@@ -3,9 +3,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
-using XRInput.Core.Singleton;
+using Crengine.XRInput.Core.Singleton;
 
-namespace XRInput.Core
+namespace Crengine.XRInput.Core
 {
     public class XRInputStateManager : XRInputSingleton<XRInputStateManager>
     {
@@ -39,40 +39,41 @@ namespace XRInput.Core
 
         public Vector3 GetDeviceHitPosition(XRNode _xrNode)
         {
-            return Getter(_xrNode, leftHitPosition, rightHitPosition);
-            //if (_xrNode == XRNode.RightHand)
-            //{
-            //    return rightHitPosition;
-            //}
-            //else if (_xrNode == XRNode.LeftHand)
-            //{
-            //    return leftHitPosition;
-            //}
-            //else
-            //{
-            //    Debug.LogError("Not Assigned Hand Controller");
-            //    return Vector3.zero;
-            //}
+            //return Getter(_xrNode, leftHitPosition, rightHitPosition);
+            if (_xrNode == XRNode.RightHand)
+            {
+                return rightHitPosition;
+            }
+            else if (_xrNode == XRNode.LeftHand)
+            {
+                return leftHitPosition;
+            }
+            else
+            {
+                Debug.LogError("Not Assigned Hand Controller");
+                return Vector3.zero;
+            }
         }
         public void SetDeviceHitPosition(XRNode _xrNode, Vector3 _vector)
         {
-            Setter(_xrNode, leftHitPosition, rightHitPosition, _vector);
-            //if (_xrNode == XRNode.RightHand)
-            //{
-            //    rightHitPosition = _vector;
-            //}
-            //else if (_xrNode == XRNode.LeftHand)
-            //{
-            //    leftHitPosition = _vector;
-            //}
-            //else
-            //{
-            //    Debug.LogError("Not Assigned Hand Controller");
-            //}
+            //Setter(_xrNode, leftHitPosition, rightHitPosition, _vector);
+            if (_xrNode == XRNode.RightHand)
+            {
+                rightHitPosition = _vector;
+            }
+            else if (_xrNode == XRNode.LeftHand)
+            {
+                leftHitPosition = _vector;
+            }
+            else
+            {
+                Debug.LogError("Not Assigned Hand Controller");
+            }
         }
 
         public Vector3 GetDeviceInteractOffset(XRNode _xrNode)
         {
+            //return Getter(_xrNode, leftInteractOffset, rightInteractOffset);
             if (_xrNode == XRNode.RightHand)
             {
                 return rightInteractOffset;
@@ -89,6 +90,7 @@ namespace XRInput.Core
         }
         public void SetDeviceInteractOffet(XRNode _xrNode, Vector3 _targetPos, Vector3 _interactPos)
         {
+            //Setter(_xrNode, leftInteractOffset, rightInteractOffset, _targetPos - _interactPos);
             if (_xrNode == XRNode.RightHand)
             {
                 rightInteractOffset = _targetPos - _interactPos;
@@ -105,6 +107,7 @@ namespace XRInput.Core
 
         public float GetDeviceInteractLength(XRNode _xrNode)
         {
+            //return Getter(_xrNode, leftInteractLength, rightInteractLength);
             if (_xrNode == XRNode.RightHand)
             {
                 return rightInteractLength;
@@ -121,6 +124,7 @@ namespace XRInput.Core
         }
         public void SetDeviceInteractLength(XRNode _xrNode, float _length)
         {
+            //Setter(_xrNode, leftInteractLength, rightInteractLength, _length);
             if (_xrNode == XRNode.RightHand)
             {
                 rightInteractLength = _length;
@@ -137,11 +141,12 @@ namespace XRInput.Core
 
         public bool GetDeviceTriggerState(XRNode _xrNode)
         {
+            //return Getter(_xrNode, leftTriggerState, rightTriggerState);
             if (_xrNode == XRNode.RightHand)
             {
                 return rightTriggerState;
             }
-            else if(_xrNode == XRNode.LeftHand)
+            else if (_xrNode == XRNode.LeftHand)
             {
                 return leftTriggerState;
             }
@@ -153,6 +158,7 @@ namespace XRInput.Core
         }
         public void SetDeviceTriggerState(XRNode _xrNode, bool _state)
         {
+            //Setter(_xrNode, leftTriggerState, rightTriggerState, _state);
             if (_xrNode == XRNode.RightHand)
             {
                 rightTriggerState = _state;
@@ -169,6 +175,7 @@ namespace XRInput.Core
 
         public bool GetDeviceGripState(XRNode _xrNode)
         {
+            //return Getter(_xrNode, leftGripState, rightGripState);
             if (_xrNode == XRNode.RightHand)
             {
                 return rightGripState;
@@ -185,6 +192,7 @@ namespace XRInput.Core
         }
         public void SetDeviceGripState(XRNode _xrNode, bool _state)
         {
+            //Setter(_xrNode, leftGripState, rightGripState, _state);
             if (_xrNode == XRNode.RightHand)
             {
                 rightGripState = _state;
@@ -201,6 +209,7 @@ namespace XRInput.Core
 
         public Vector2 GetDevicePrimaryState(XRNode _xrNode)
         {
+            //return Getter(_xrNode, leftPrimaryVector, rightPrimaryVector);
             if (_xrNode == XRNode.RightHand)
             {
                 return rightPrimaryVector;
@@ -217,6 +226,7 @@ namespace XRInput.Core
         }
         public void SetDevicePrimaryState(XRNode _xrNode, Vector2 _vector)
         {
+            //Setter(_xrNode, leftPrimaryVector, rightPrimaryVector, _vector);
             if (_xrNode == XRNode.RightHand)
             {
                 rightPrimaryVector = _vector;
@@ -233,6 +243,7 @@ namespace XRInput.Core
 
         public Vector2 GetDeviceSecondaryState(XRNode _xrNode)
         {
+            //return Getter(_xrNode, leftSecondaryVector, rightSecondaryVector);
             if (_xrNode == XRNode.RightHand)
             {
                 return rightSecondaryVector;
@@ -249,13 +260,14 @@ namespace XRInput.Core
         }
         public void SetDeviceSecondaryState(XRNode _xrNode, Vector2 _vector)
         {
+            //Setter(_xrNode, leftSecondaryVector, rightSecondaryVector, _vector);
             if (_xrNode == XRNode.RightHand)
             {
                 rightSecondaryVector = _vector;
             }
             else if (_xrNode == XRNode.LeftHand)
             {
-                leftSecondaryVector= _vector;
+                leftSecondaryVector = _vector;
             }
             else
             {
@@ -265,6 +277,7 @@ namespace XRInput.Core
 
         public bool GetDeviceMenuState(XRNode _xrNode)
         {
+            //return Getter(_xrNode, leftMenuState, rightMenuState);
             if (_xrNode == XRNode.RightHand)
             {
                 return rightMenuState;
@@ -281,6 +294,7 @@ namespace XRInput.Core
         }
         public void SetDeviceMenuState(XRNode _xrNode, bool _state)
         {
+            //Setter(_xrNode, leftMenuState, rightMenuState, _state);
             if (_xrNode == XRNode.RightHand)
             {
                 rightMenuState = _state;
@@ -297,6 +311,7 @@ namespace XRInput.Core
 
         public bool GetDeviceInteractingState(XRNode _xrNode)
         {
+            //return Getter(_xrNode, leftInteracting, rightInteracting);
             if (_xrNode == XRNode.RightHand)
             {
                 return rightInteracting;
@@ -313,6 +328,7 @@ namespace XRInput.Core
         }
         public void SetDeviceInteractingState(XRNode _xrNode, bool _state)
         {
+            //Setter(_xrNode, leftInteracting, rightInteracting, _state);
             if (_xrNode == XRNode.RightHand)
             {
                 rightInteracting = _state;
@@ -329,6 +345,7 @@ namespace XRInput.Core
 
         public GameObject GetDeviceInteractObject(XRNode _xrNode)
         {
+            //return Getter(_xrNode, leftInteractObject, rightInteractObject);
             if (_xrNode == XRNode.RightHand)
             {
                 return rightInteractObject;
@@ -345,6 +362,7 @@ namespace XRInput.Core
         }
         public void SetDeviceInteractObject(XRNode _xrNode, GameObject _object)
         {
+            //Setter(_xrNode, leftInteractObject, rightInteractObject, _object);
             if (_xrNode == XRNode.RightHand)
             {
                 rightInteractObject = _object;
