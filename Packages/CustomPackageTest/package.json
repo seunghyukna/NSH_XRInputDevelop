@@ -1,20 +1,20 @@
 {
-  "name": "com.unity.test",
-  "displayName": "Test Custom Package",
-  "version": "0.0.1",
+  "name": "com.crengine.custompackagetest",
+  "description": "The Shader Graph package adds a visual Shader editing tool to Unity. You can use this tool to create Shaders in a visual way instead of writing code. Specific render pipelines can implement specific graph features. Currently, both the High Definition Rendering Pipeline and the Universal Rendering Pipeline support Shader Graph.",
+  "version": "7.3.1",
   "unity": "2019.3",
-  "description": "Contains definitions for Interaction Subsystems. This package is a dependency of provider packages.",
-  "keywords": [
-    "subsystem",
-    "XR",
-    "Interaction"
+  "unityRelease": "2f1",
+  "displayName": "CustomPackageTest",
+  "samples": [
+    {
+      "displayName": "Procedural Patterns",
+      "description": "This collection of assets showcase various procedural techniques possible with Shader Graph. Use them in your project or edit them to create other procedural pattens. Patterns: Bacteria, Brick, Dots, Grid, Herringbone, Hex Lattice, Houndstooth, Smooth Wave, Spiral, Stripes, Truchet, Whirl, Zig Zag",
+      "path": "Samples~/ProceduralPatterns"
+    }
   ],
-  "dependencies": {
-    "com.unity.subsystemregistration": "1.0.6"
-  },
   "repository": {
     "type": "git",
-    "url": "git@github.cds.internal.unity3d.com:unity/com.unity.xr.interactionsubsystems.git",
-    "revision": "e4d74ea2d737ed36976840f753a2817ef9e4e56d"
+    "url": "https://github.com/seunghyukna/NSH_XRInputDevelop.git",
+    "revision": "3e04a9da77f7658a9bec4a2a8de3a4a40b169865"
   }
 }
