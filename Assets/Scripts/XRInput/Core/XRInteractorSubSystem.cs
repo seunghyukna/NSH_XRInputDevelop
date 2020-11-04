@@ -7,7 +7,7 @@ using XRInputManager = Crengine.XRInput.Core.XRInputStateManager;
 
 namespace Crengine.XRInput.Core
 {
-    public class XRInteractorSubSystem : MonoBehaviour
+    public abstract class XRInteractorSubSystem : MonoBehaviour
     {
         protected XRBaseInteractor baseInteractor;
         protected XRBaseInteractable baseInteractable;
@@ -45,5 +45,7 @@ namespace Crengine.XRInput.Core
             device.TryGetFeatureValue(CommonUsages.menuButton, out isMenuPress);
             XRInputManager.Instance.SetDeviceMenuState(xrNode, isMenuPress);
         }
+
+        protected abstract void SetController();
     }
 }

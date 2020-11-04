@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
+using UnityEngine.XR.Interaction.Toolkit;
 using Crengine.XRInput.Core;
 using Crengine.XRInput.UI;
-using UnityEngine.XR.Interaction.Toolkit;
 using XRLogger = Crengine.XRInput.Core.XRDebugLogger;
 using XRInputManager = Crengine.XRInput.Core.XRInputStateManager;
 
@@ -13,12 +14,18 @@ namespace Crengine.XRInput
         [SerializeField] Transform player;
         private XRRayInteractor rayInteractor;
         private LineVisual lineVisual;
+        private XRControlTypeManager controlTypeManager;
         [SerializeField] private float rayMaxLength;
         private Vector3 currentInteractPoint;
         private RaycastHit currentHit;
         private Vector3 interactorPoint;
         private float interactLength;
-        
+
+        [Header("Cursor")]
+        public GameObject moveCursor;
+        public GameObject rotateCursor;
+        public GameObject scaleCursor;
+        private GameObject[] cursors = new GameObject[3];
 
         [Header("Hover")]
         [SerializeField] private bool hoverUse;
@@ -41,32 +48,31 @@ namespace Crengine.XRInput
         [SerializeField] private float dragSpeed = 0.1f;
         [SerializeField] private float pullingAmount = 50f;
 
-        //[Header("Grab Raoate")]
-        //[SerializeField] private bool rotateUse;
-        //[SerializeField] private float rotateSpeed = 10f;
+        [Header("Grab Raoate")]
+        [SerializeField] private bool rotateUse;
+        [SerializeField] private float rotateSpeed = 10f;
 
-        XRControlTypeManager controlTypeManager;
+        [Header("Scale Control")]
+        [SerializeField] private bool scaleControlUse;
+
+
+
         private void Awake()
         {
-            controlTypeManager = player.GetComponent<XRControlTypeManager>();
-            if (controlTypeManager.Interactor != InteractorType.Ray)
-            {
-                gameObject.SetActive(false);
-            }
+            SetController();
         }
 
         private void Start()
         {
-            baseInteractor = GetComponent<XRBaseInteractor>();
-            rayInteractor = GetComponent<XRRayInteractor>();
-            lineVisual = GetComponent<LineVisual>();
-
             baseInteractor.onHoverEnter.AddListener(OnHoverEnterInteractable);
             baseInteractor.onHoverExit.AddListener(OnHoverExitInteractable);
             baseInteractor.onSelectEnter.AddListener(OnSelectEnterInteractable);
             baseInteractor.onSelectExit.AddListener(OnSelectExitInteractable);
 
             MatchLineLength();
+            InitizalizeCursor();
+
+            XRInputManager.HoverEnterEvent += MyHoverEnter;
         }
 
         private void Update()
@@ -98,9 +104,21 @@ namespace Crengine.XRInput
 
             // Update LineRenderer
             lineVisual.LineVisualize(isSelected);
+
+            RayVisualizeDebug(ray);
         }
 
-        #region Initialization
+        private void RayVisualizeDebug(Ray _ray)
+        {
+            Debug.DrawRay(_ray.origin, _ray.direction * rayMaxLength, Color.red);
+            Debug.DrawRay(_ray.origin, _ray.direction *
+                Vector3.Distance(transform.position, currentInteractPoint), Color.blue);
+
+            if (XRInputManager.Instance.GetDeviceInteractObject(xrNode) != null)
+            {
+                Debug.DrawRay(_ray.origin, _ray.direction * XRInputManager.Instance.GetDeviceInteractLength(xrNode), Color.yellow);
+            }
+        }
 
         private void GetInteractPosition(Ray _ray)
         {
@@ -110,18 +128,22 @@ namespace Crengine.XRInput
             // hit object
             if (hit.transform != null)
             {
-                currentInteractPoint = transform.position + _ray.direction * Vector3.Distance(transform.position, hit.transform.position);
+                currentInteractPoint = transform.position + _ray.direction * Vector3.Distance(transform.position, hit.point);
                 lineVisual.FollowPoint = currentInteractPoint;
+                for (int i = 0; i < cursors.Length; i++)
+                    cursors[i].transform.position = currentInteractPoint;
 
                 return;
             }
-            
+
             // grab object
             if (XRInputManager.Instance.GetDeviceInteractObject(xrNode) != null)
-            {                
-                currentInteractPoint = transform.position + _ray.direction * 
+            {
+                currentInteractPoint = transform.position + _ray.direction *
                     XRInputManager.Instance.GetDeviceInteractLength(xrNode);
                 lineVisual.FollowPoint = currentInteractPoint;
+                for (int i = 0; i < cursors.Length; i++)
+                    cursors[i].transform.position = currentInteractPoint;
 
                 return;
             }
@@ -129,6 +151,67 @@ namespace Crengine.XRInput
             // no hit object
             currentInteractPoint = transform.position + _ray.direction * rayMaxLength;
             lineVisual.FollowPoint = currentInteractPoint;
+            for (int i = 0; i < cursors.Length; i++)
+                cursors[i].transform.position = currentInteractPoint;
+        }
+
+        #region
+
+        private void InitizalizeCursor()
+        {
+            cursors[0] = moveCursor;
+            cursors[1] = rotateCursor;
+            cursors[2] = scaleCursor;
+
+            for (int i = 0; i < cursors.Length; i++)
+                cursors[i].SetActive(false);
+        }
+
+        private void OnOffCursor(CursorContext.CursorAction _action)
+        {
+            switch (_action)
+            {
+                case CursorContext.CursorAction.None:
+                    for (int i = 0; i < cursors.Length; i++)
+                        cursors[i].SetActive(false);
+                    break;
+                case CursorContext.CursorAction.Move:
+                    cursors[0].SetActive(true);
+                    break;
+                case CursorContext.CursorAction.Rotate:
+                    cursors[1].SetActive(true);
+                    break;
+                case CursorContext.CursorAction.Scale:
+                    cursors[2].SetActive(true);
+                    break;
+                default:
+                    for (int i = 0; i < cursors.Length; i++)
+                        cursors[i].SetActive(false);
+                    break;
+            }
+        }
+
+        #endregion
+
+
+        #region Initialization
+
+        protected override void SetController()
+        {
+            baseInteractor = GetComponent<XRBaseInteractor>();
+            rayInteractor = GetComponent<XRRayInteractor>();
+            lineVisual = GetComponent<LineVisual>();
+            controlTypeManager = player.GetComponent<XRControlTypeManager>();
+
+            if (controlTypeManager.Interactor != InteractorType.Ray)
+                gameObject.SetActive(false);
+            else
+            {
+                Debug.Log("Ray");
+                XRBaseInteractor tmp = xrNode == XRNode.RightHand ?
+                    controlTypeManager.RightController = baseInteractor :
+                    controlTypeManager.LeftController = baseInteractor;
+            }
         }
 
         private void MatchLineLength()
@@ -138,7 +221,7 @@ namespace Crengine.XRInput
 
         #endregion
 
-        #region Hovering
+        #region Outline
 
         private void OutlineActivate(XRBaseInteractable _interactable)
         {
@@ -208,10 +291,16 @@ namespace Crengine.XRInput
             }
 
             // Rotate interactable object
-            //if (rotateUse)
-            //{
+            if (rotateUse)
+            {
+                
+            }
 
-            //}
+            // Scale control interactable object
+            if (scaleControlUse)
+            {
+
+            }
 
             // Fix linerenderer end point to first interacted point
             lineVisual.LocalToGlobalPoint =
@@ -221,6 +310,11 @@ namespace Crengine.XRInput
         #endregion
 
         #region Events
+
+        private void MyHoverEnter(XRBaseInteractable _interactable)
+        {
+            Debug.Log(_interactable.name);
+        }
 
         private void OnHoverEnterInteractable(XRBaseInteractable _interactable)
         {
@@ -232,12 +326,16 @@ namespace Crengine.XRInput
             // Interactable object is UI
             if (_interactable.gameObject.layer == 5)
             {
-                XRUIManipulateProvider.InvokeUIHoverEnter(_interactable.gameObject, baseInteractor);
+                XRUIManipulateProvider.InvokeUIHoverEnterEvent(_interactable.gameObject, baseInteractor);
             }
             
             rayInteractor.GetCurrentRaycastHit(out currentHit);
-            OutlineActivate(_interactable);
-            ManageOutlineActivate();
+            //OutlineActivate(_interactable);
+            //ManageOutlineActivate();
+            if (_interactable.GetComponent<CursorContext>() != null)
+            {
+                OnOffCursor(_interactable.GetComponent<CursorContext>().CurrentCursorAction);
+            }
             isHovering = true;
         }
 
@@ -251,12 +349,16 @@ namespace Crengine.XRInput
             // Interactable object is UI
             if (_interactable.gameObject.layer == 5)
             {
-                XRUIManipulateProvider.InvokeUIHoverExit(_interactable.gameObject, baseInteractor);
+                XRUIManipulateProvider.InvokeUIHoverExitEvent(_interactable.gameObject, baseInteractor);
             }
 
             rayInteractor.GetCurrentRaycastHit(out currentHit);
-            ManageOutlineActivate();
-            OutlineDeactivate(_interactable);
+            //ManageOutlineActivate();
+            //OutlineDeactivate(_interactable);
+            if (_interactable.GetComponent<CursorContext>() != null)
+            {
+                OnOffCursor(CursorContext.CursorAction.None);
+            }
             isHovering = false;
         }
 
@@ -270,7 +372,7 @@ namespace Crengine.XRInput
             // Interactable object is UI
             if (_interactable.gameObject.layer == 5)
             {
-                XRUIManipulateProvider.InvokeUIManipulateStart(_interactable.gameObject, baseInteractor);
+                XRUIManipulateProvider.InvokeUIManipulateStartEvent(_interactable.gameObject, baseInteractor);
             }
 
             selectedObject = baseInteractor.selectTarget.gameObject;
@@ -296,7 +398,7 @@ namespace Crengine.XRInput
             // Interactable object is UI
             if (_interactable.gameObject.layer == 5)
             {
-                XRUIManipulateProvider.InvokeUIManipulateEnd(_interactable.gameObject, baseInteractor);
+                XRUIManipulateProvider.InvokeUIManipulateEndEvent(_interactable.gameObject, baseInteractor);
             }
 
             selectedObject = null;

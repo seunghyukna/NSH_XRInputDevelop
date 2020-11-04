@@ -12,7 +12,60 @@ namespace Crengine.XRInput.Core
         public XRController leftController;
         public XRController rightController;
 
-        #region Getter, Setter
+        [SerializeField] XRControlTypeManager controlTypeManager;
+
+        private void Start()
+        {
+            leftController = controlTypeManager.LeftController.GetComponent<XRController>();
+            rightController = controlTypeManager.RightController.GetComponent<XRController>();
+        }
+
+        #region events
+
+        public delegate void InteractHoverEvent(XRBaseInteractable _interactable);
+        public delegate void InteractSelectEvent(XRBaseInteractable _interactable);
+
+        public static InteractHoverEvent HoverEnterEvent;
+        public static InteractHoverEvent HoveringEvent;
+        public static InteractHoverEvent HoverExitEvent;
+
+        public static InteractSelectEvent SelectEnterEvent;
+        public static InteractSelectEvent SelectingEvent;
+        public static InteractSelectEvent SelectExitEvent;
+
+        public void InvokeHoverEnter(XRBaseInteractable _interactable)
+        {
+            HoverEnterEvent.Invoke(_interactable);
+        }
+
+        public void InvokeHovering(XRBaseInteractable _interactable)
+        {
+            HoveringEvent.Invoke(_interactable);
+        }
+
+        public void InvokeHoverEnd(XRBaseInteractable _interactable)
+        {
+            HoverExitEvent.Invoke(_interactable);
+        }
+
+        public void InvokeSelectEnter(XRBaseInteractable _interactable)
+        {
+            SelectEnterEvent.Invoke(_interactable);
+        }
+
+        public void InvokeSelecting(XRBaseInteractable _interactable)
+        {
+            SelectingEvent.Invoke(_interactable);
+        }
+
+        public void InvokeSelectExit(XRBaseInteractable _interactable)
+        {
+            SelectExitEvent.Invoke(_interactable);
+        }
+
+        #endregion
+
+        #region value, getter, setter
 
         private Vector3 leftHitPosition;
         private Vector3 leftInteractOffset;
@@ -36,505 +89,96 @@ namespace Crengine.XRInput.Core
         private bool rightInteracting;
         private GameObject rightInteractObject;
 
-
         public Vector3 GetDeviceHitPosition(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftHitPosition, rightHitPosition);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightHitPosition;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftHitPosition;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return Vector3.zero;
-            }
+            return _xrNode == XRNode.RightHand ? rightHitPosition : leftHitPosition;
         }
+
         public void SetDeviceHitPosition(XRNode _xrNode, Vector3 _vector)
         {
-            //Setter(_xrNode, leftHitPosition, rightHitPosition, _vector);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightHitPosition = _vector;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftHitPosition = _vector;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
+            Vector3 tmp = _xrNode == XRNode.RightHand ? rightHitPosition = _vector : leftHitPosition = _vector;
         }
 
         public Vector3 GetDeviceInteractOffset(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftInteractOffset, rightInteractOffset);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightInteractOffset;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftInteractOffset;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return Vector3.zero;
-            }
+            return _xrNode == XRNode.RightHand ? rightInteractOffset : leftInteractOffset;
         }
         public void SetDeviceInteractOffet(XRNode _xrNode, Vector3 _targetPos, Vector3 _interactPos)
         {
-            //Setter(_xrNode, leftInteractOffset, rightInteractOffset, _targetPos - _interactPos);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightInteractOffset = _targetPos - _interactPos;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftInteractOffset = _targetPos - _interactPos;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
+            Vector3 offset = (_targetPos - _interactPos);
+            Vector3 tmp = _xrNode == XRNode.RightHand ? rightInteractOffset = offset : leftInteractOffset = offset;
         }
 
         public float GetDeviceInteractLength(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftInteractLength, rightInteractLength);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightInteractLength;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftInteractLength;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return 0.0f;
-            }
+            return _xrNode == XRNode.RightHand ? rightInteractLength : leftInteractLength;
         }
         public void SetDeviceInteractLength(XRNode _xrNode, float _length)
         {
-            //Setter(_xrNode, leftInteractLength, rightInteractLength, _length);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightInteractLength = _length;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftInteractLength = _length;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
+            float tmp = _xrNode == XRNode.RightHand ? rightInteractLength = _length : leftInteractLength = _length;
         }
 
         public bool GetDeviceTriggerState(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftTriggerState, rightTriggerState);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightTriggerState;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftTriggerState;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return false;
-            }
+            return _xrNode == XRNode.RightHand ? rightTriggerState : leftTriggerState;
         }
         public void SetDeviceTriggerState(XRNode _xrNode, bool _state)
         {
-            //Setter(_xrNode, leftTriggerState, rightTriggerState, _state);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightTriggerState = _state;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftTriggerState = _state;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
+            bool tmp = _xrNode == XRNode.RightHand ? rightTriggerState = _state : leftTriggerState = _state;
         }
 
         public bool GetDeviceGripState(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftGripState, rightGripState);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightGripState;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftGripState;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return false;
-            }
+            return _xrNode == XRNode.RightHand ? rightGripState : leftGripState;
         }
         public void SetDeviceGripState(XRNode _xrNode, bool _state)
         {
-            //Setter(_xrNode, leftGripState, rightGripState, _state);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightGripState = _state;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftGripState = _state;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
+            bool tmp = _xrNode == XRNode.RightHand ? rightGripState = _state : leftGripState = _state;
         }
 
         public Vector2 GetDevicePrimaryState(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftPrimaryVector, rightPrimaryVector);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightPrimaryVector;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftPrimaryVector;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return Vector2.zero;
-            }
+            return _xrNode == XRNode.RightHand ? rightPrimaryVector : leftPrimaryVector;
         }
         public void SetDevicePrimaryState(XRNode _xrNode, Vector2 _vector)
         {
-            //Setter(_xrNode, leftPrimaryVector, rightPrimaryVector, _vector);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightPrimaryVector = _vector;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftPrimaryVector = _vector;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
+            Vector2 tmp = _xrNode == XRNode.RightHand ? rightPrimaryVector = _vector : leftPrimaryVector = _vector;
         }
 
         public Vector2 GetDeviceSecondaryState(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftSecondaryVector, rightSecondaryVector);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightSecondaryVector;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftSecondaryVector;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return Vector2.zero;
-            }
+            return _xrNode == XRNode.RightHand ? rightSecondaryVector : leftSecondaryVector;
         }
         public void SetDeviceSecondaryState(XRNode _xrNode, Vector2 _vector)
         {
-            //Setter(_xrNode, leftSecondaryVector, rightSecondaryVector, _vector);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightSecondaryVector = _vector;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftSecondaryVector = _vector;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
+            Vector2 tmp = _xrNode == XRNode.RightHand ? rightSecondaryVector = _vector : leftSecondaryVector = _vector;
         }
 
         public bool GetDeviceMenuState(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftMenuState, rightMenuState);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightMenuState;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftMenuState;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return false;
-            }
+            return _xrNode == XRNode.RightHand ? rightMenuState : leftMenuState;
         }
         public void SetDeviceMenuState(XRNode _xrNode, bool _state)
         {
-            //Setter(_xrNode, leftMenuState, rightMenuState, _state);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightMenuState = _state;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftMenuState = _state;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
+            bool tmp = _xrNode == XRNode.RightHand ? rightMenuState = _state : leftMenuState = _state;
         }
 
         public bool GetDeviceInteractingState(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftInteracting, rightInteracting);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightInteracting;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftInteracting;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return false;
-            }
+            return _xrNode == XRNode.RightHand ? rightInteracting : leftInteracting;
         }
         public void SetDeviceInteractingState(XRNode _xrNode, bool _state)
         {
-            //Setter(_xrNode, leftInteracting, rightInteracting, _state);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightInteracting = _state;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftInteracting = _state;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
+            bool tmp = _xrNode == XRNode.RightHand ? rightInteracting = _state : leftInteracting = _state;
         }
 
         public GameObject GetDeviceInteractObject(XRNode _xrNode)
         {
-            //return Getter(_xrNode, leftInteractObject, rightInteractObject);
-            if (_xrNode == XRNode.RightHand)
-            {
-                return rightInteractObject;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return leftInteractObject;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return null;
-            }
+            return _xrNode == XRNode.RightHand ? rightInteractObject : leftInteractObject;
         }
         public void SetDeviceInteractObject(XRNode _xrNode, GameObject _object)
         {
-            //Setter(_xrNode, leftInteractObject, rightInteractObject, _object);
-            if (_xrNode == XRNode.RightHand)
-            {
-                rightInteractObject = _object;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                leftInteractObject = _object;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
-        }
-
-
-        private Vector3 Getter(XRNode _xrNode, Vector3 _left, Vector3 _right)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                return _right;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return _left;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return Vector3.zero;
-            }
-        }
-        private Vector2 Getter(XRNode _xrNode, Vector2 _left, Vector2 _right)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                return _right;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return _left;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return Vector2.zero;
-            }
-        }
-        private float Getter(XRNode _xrNode, float _left, float _right)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                return _right;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return _left;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return 0.0f;
-            }
-        }
-        private bool Getter(XRNode _xrNode, bool _left, bool _right)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                return _right;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return _left;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return false;
-            }
-        }
-        private GameObject Getter(XRNode _xrNode, GameObject _left, GameObject _right)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                return _right;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                return _left;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-                return null;
-            }
-        }
-
-        private void Setter(XRNode _xrNode, Vector3 _left, Vector3 _right, Vector3 _input)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                _right = _input;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                _left = _input;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
-        }
-        private void Setter(XRNode _xrNode, Vector2 _left, Vector2 _right, Vector2 _input)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                _right = _input;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                _left = _input;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
-        }
-        private void Setter(XRNode _xrNode, float _left, float _right, float _input)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                _right = _input;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                _left = _input;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
-        }
-        private void Setter(XRNode _xrNode, bool _left, bool _right, bool _input)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                _right = _input;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                _left = _input;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
-        }
-        private void Setter(XRNode _xrNode, GameObject _left, GameObject _right, GameObject _input)
-        {
-            if (_xrNode == XRNode.RightHand)
-            {
-                _right = _input;
-            }
-            else if (_xrNode == XRNode.LeftHand)
-            {
-                _left = _input;
-            }
-            else
-            {
-                Debug.LogError("Not Assigned Hand Controller");
-            }
-
-
+            GameObject tmp = _xrNode == XRNode.RightHand ? rightInteractObject = _object : leftInteractObject = _object;
         }
 
         #endregion

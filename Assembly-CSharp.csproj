@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\XRInput\Core\XRFloatingUI.cs" />
     <Compile Include="Assets\Scripts\XRInput\Core\XRInputStateManager.cs" />
     <Compile Include="Assets\Scripts\XRInput\Core\XRInteractorSubSystem.cs" />
+    <Compile Include="Assets\Scripts\XRInput\CursorContext.cs" />
     <Compile Include="Assets\Scripts\XRInput\CurvedLinePoint.cs" />
     <Compile Include="Assets\Scripts\XRInput\CurvedLineRenderer.cs" />
     <Compile Include="Assets\Scripts\XRInput\LineVisual.cs" />
@@ -86,10 +87,10 @@
     <Compile Include="Assets\Scripts\XRInput\UI\XRUIManipulate.cs" />
     <Compile Include="Assets\Scripts\XRInput\UI\XRUIManipulateProvider.cs" />
     <Compile Include="Assets\Scripts\XRInput\XRDirectInteractorSubSystem.cs" />
+    <Compile Include="Assets\Scripts\XRInput\XRObjectManipulater.cs" />
     <Compile Include="Assets\Scripts\XRInput\XRRayInteractorSubSystem.cs" />
     <Compile Include="Assets\Scripts\XRInput\XRTeleportHandler.cs" />
     <Compile Include="Assets\Test\BillboardTest.cs" />
-    <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
@@ -684,9 +685,6 @@
     <Reference Include="Unity.RenderPipelines.Core.Runtime">
       <HintPath>D:/GithubLocal/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.XR.InteractionSubsystems">
-      <HintPath>D:/GithubLocal/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.InteractionSubsystems.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/GithubLocal/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
@@ -743,6 +741,9 @@
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>D:/GithubLocal/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.InteractionSubsystems">
+      <HintPath>D:/GithubLocal/Personal/NSH_XRInputDevelop/Library/ScriptAssemblies/Unity.XR.InteractionSubsystems.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup></ItemGroup>

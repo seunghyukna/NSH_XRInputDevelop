@@ -75,5 +75,10 @@ namespace Crengine.XRInput
                 player.position = lineRenderer.GetPosition(lineRenderer.positionCount - 1);
             }
         }
+
+        protected override void SetController()
+        {
+            
+        }
     }
 }

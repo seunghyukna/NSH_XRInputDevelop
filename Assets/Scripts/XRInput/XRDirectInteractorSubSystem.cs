@@ -1,7 +1,9 @@
-﻿using UnityEngine;
-using Crengine.XRInput.Core;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
+using Crengine.XRInput.Core;
+using Crengine.XRInput.UI;
 using XRLogger = Crengine.XRInput.Core.XRDebugLogger;
 using XRInputManager = Crengine.XRInput.Core.XRInputStateManager;
 
@@ -29,25 +31,53 @@ namespace Crengine.XRInput
         [SerializeField] [Range(0, 10)] private float outlineWidth;
         private List<Outline> outlines = new List<Outline>();
 
-        XRControlTypeManager controlTypeManager;
+        private XRControlTypeManager controlTypeManager;
+
         private void Awake()
         {
-            controlTypeManager = player.GetComponent<XRControlTypeManager>();
-            if (controlTypeManager.Interactor != InteractorType.Direct)
-            {
-                gameObject.SetActive(false);
-            }
+            SetController();
         }
+
         private void Start()
         {
-            baseInteractor = GetComponent<XRBaseInteractor>();
-            directInteractor = GetComponent<XRDirectInteractor>();
-
             baseInteractor.onHoverEnter.AddListener(OnHoverEnterInteractable);
             baseInteractor.onHoverExit.AddListener(OnHoverExitInteractable);
             baseInteractor.onSelectEnter.AddListener(OnSelectEnterInteractable);
             baseInteractor.onSelectExit.AddListener(OnSelectExitInteractable);
         }
+
+        private void Update()
+        {
+            // Get my XRNode
+            if (!device.isValid)
+                GetDevice();
+
+            // Catch current XRNode button use
+            DetectControllerUse();
+        }
+
+        #region initialization
+
+        protected override void SetController()
+        {
+            baseInteractor = GetComponent<XRBaseInteractor>();
+            directInteractor = GetComponent<XRDirectInteractor>();
+            controlTypeManager = player.GetComponent<XRControlTypeManager>();
+
+            if (controlTypeManager.Interactor != InteractorType.Direct)
+                gameObject.SetActive(false);
+            else
+            {
+                Debug.Log("Direct");
+                XRBaseInteractor tmp = xrNode == XRNode.RightHand ?
+                    controlTypeManager.RightController = baseInteractor :
+                    controlTypeManager.LeftController = baseInteractor;
+            }
+        }
+
+        #endregion
+
+        #region Hovering
 
         private void OutlineActivate()
         {
@@ -75,6 +105,8 @@ namespace Crengine.XRInput
             outlines[currentIdx].enabled = false;
             outlines.RemoveAt(currentIdx);
         }
+
+        #endregion
 
         #region Events
 

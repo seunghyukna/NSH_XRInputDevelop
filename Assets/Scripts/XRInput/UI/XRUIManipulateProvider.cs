@@ -11,7 +11,7 @@ namespace Crengine.XRInput.UI
     /// </summary>
 
     [System.Serializable]
-    public class HoverEvent : UnityEvent { }
+    public class UIHoverEvent : UnityEvent { }
 
     [System.Serializable]
     public class ManipulateEvent : UnityEvent { }
@@ -28,8 +28,8 @@ namespace Crengine.XRInput.UI
         private XRUIBillboard billboard;
 
         [Header("Hover Events")]
-        public HoverEvent HoverEnter;
-        public HoverEvent HoverExit;
+        public UIHoverEvent HoverEnter;
+        public UIHoverEvent HoverExit;
 
         [Header("Select Events")]
         public ManipulateEvent ManipulateStart;
@@ -45,8 +45,9 @@ namespace Crengine.XRInput.UI
             UIManipulateEnd += ManipulateEndEvent;
         }
 
+        #region Invoker
 
-        public static void InvokeUIHoverEnter(GameObject _object, XRBaseInteractor _interactor)
+        public static void InvokeUIHoverEnterEvent(GameObject _object, XRBaseInteractor _interactor)
         {
             if (UIHoverEnter != null)
             {
@@ -54,7 +55,7 @@ namespace Crengine.XRInput.UI
             }
         }
 
-        public static void InvokeUIHoverExit(GameObject _object, XRBaseInteractor _interactor)
+        public static void InvokeUIHoverExitEvent(GameObject _object, XRBaseInteractor _interactor)
         {
             if (UIHoverExit != null)
             {
@@ -62,7 +63,7 @@ namespace Crengine.XRInput.UI
             }
         }
 
-        public static void InvokeUIManipulateStart(GameObject _object, XRBaseInteractor _interactor)
+        public static void InvokeUIManipulateStartEvent(GameObject _object, XRBaseInteractor _interactor)
         {
             if (UIManipulateStart != null)
             {
@@ -70,7 +71,7 @@ namespace Crengine.XRInput.UI
             }
         }
 
-        public static void InvokeUIManipulateEnd(GameObject _object, XRBaseInteractor _interactor)
+        public static void InvokeUIManipulateEndEvent(GameObject _object, XRBaseInteractor _interactor)
         {
             if (UIManipulateEnd != null)
             {
@@ -78,27 +79,29 @@ namespace Crengine.XRInput.UI
             }
         }
 
+        #endregion
+
         #region events
 
-        private void HoverEnterEvent(GameObject _obj, XRBaseInteractor _interactor)
+        private void HoverEnterEvent(GameObject _object, XRBaseInteractor _interactor)
         {
-            if (_obj == titleBar)
+            if (_object == titleBar)
             {
                 this.HoverEnter.Invoke();
             }
         }
 
-        private void HoverExitEvent(GameObject _obj, XRBaseInteractor _interactor)
+        private void HoverExitEvent(GameObject _object, XRBaseInteractor _interactor)
         {
-            if (_obj == titleBar)
+            if (_object == titleBar)
             {
                 this.HoverExit.Invoke();
             }
         }
 
-        private void ManipulateStartEvent(GameObject _obj, XRBaseInteractor _interactor)
+        private void ManipulateStartEvent(GameObject _object, XRBaseInteractor _interactor)
         {
-            if (_obj == titleBar)
+            if (_object == titleBar)
             {
                 this.ManipulateStart.Invoke();
                 billboard.Interactor = _interactor;
@@ -106,9 +109,9 @@ namespace Crengine.XRInput.UI
             }
         }
 
-        private void ManipulateEndEvent(GameObject _obj, XRBaseInteractor _interactor)
+        private void ManipulateEndEvent(GameObject _object, XRBaseInteractor _interactor)
         {
-            if (_obj == titleBar)
+            if (_object == titleBar)
             {
                 this.ManipulateEnd.Invoke();
                 billboard.Interactor = null;

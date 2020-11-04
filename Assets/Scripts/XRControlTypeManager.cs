@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Crengine.XRInput.Core
 {
@@ -21,6 +22,11 @@ namespace Crengine.XRInput.Core
 
         [SerializeField] private LocomotionType locomotion;
         public LocomotionType Locomotion { get { return locomotion; } set { locomotion = value; } }
+
+        private XRBaseInteractor leftController;
+        public XRBaseInteractor LeftController { get { return leftController; } set { leftController = value; } }
+        private XRBaseInteractor rightController;
+        public XRBaseInteractor RightController { get { return rightController; } set { rightController = value; } }
 
         private void Start()
         {
